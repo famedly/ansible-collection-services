@@ -1,0 +1,41 @@
+---
+- name: Set build directory
+  ansible.builtin.set_fact:
+    drivestrike_void_packages_dir: "{{ lookup('env', 'XDG_CACHE_HOME') | default(lookup('env', 'HOME') + '/.cache', true) }}/ansible-drivestrike-void"
+
+- name: Clone void-packages
+  ansible.builtin.git:
+    repo: https://github.com/void-linux/void-packages.git
+    dest: "{{ drivestrike_void_packages_dir }}"
+    force: true
+    version: master
+
+- name: Bootstrap build environment
+  ansible.builtin.command: "./xbps-src binary-bootstrap"
+  args:
+    chdir: "{{ drivestrike_void_packages_dir }}"
+    creates: "{{ drivestrike_void_packages_dir }}/masterdir"
+
+- name: Allow building restricted packages
+  ansible.builtin.lineinfile:
+    path: "{{ drivestrike_void_packages_dir }}/etc/conf"
+    line: XBPS_ALLOW_RESTRICTED=yes
+    create: true
+
+- name: Build drivestrike package
+  ansible.builtin.shell: |
+    git fetch origin pull/38917/head:drivestrike
+    git cherry-pick drivestrike
+    git branch -D drivestrike
+    ./xbps-src pkg drivestrike
+  args:
+    chdir: "{{ drivestrike_void_packages_dir }}"
+    creates: "{{ drivestrike_void_packages_dir }}/hostdir/binpkgs/nonfree/drivestrike-2.1.20_1.x86_64.xbps"
+
+- name: Install drivestrike
+  become: true
+  ansible.builtin.shell: "xbps-install --repository=hostdir/binpkgs/nonfree/ -y drivestrike"
+  args:
+    chdir: "{{ drivestrike_void_packages_dir }}"
+    creates: "/usr/bin/drivestrike"
+
