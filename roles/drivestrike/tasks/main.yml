@@ -1,0 +1,5 @@
+---
+
+- name: Install drivestrike
+  include_tasks:
+    file: "install-{{ ansible_os_family }}.yml"

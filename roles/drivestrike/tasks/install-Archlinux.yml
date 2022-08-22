@@ -1,0 +1,42 @@
+---
+
+- name: Ensure dependencies are installed
+  pacman:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - gnupg
+
+- name: Retrieve pacman repository key
+  uri:
+    method: GET
+    url: "{{ drivestrike_arch_pubkey_url }}"
+    dest: "{{ drivestrike_arch_pubkey_file }}"
+  register: drivestrik_pub_key_download
+
+- name: Import drivestrike public key
+  community.general.pacman_key:
+    id: "{{ drivestrike_arch_pubkey_fingerprint }}"
+    file: "{{ drivestrike_arch_pubkey_file }}"
+    verify: true
+    state: present
+  when: drivestrik_pub_key_download.changed
+
+- name: Configure pacman for external repositoy
+  blockinfile:
+    dest: "{{ drivestrike_arch_pacman_config_file }}"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK by famedly.services.drivestrike"
+    block: |+2
+      [drivestrike]
+      SigLevel = Required DatabaseOptional
+      Server = {{ drivestrike_arch_repo_server_url }}
+
+- name: Update pacman cache
+  pacman:
+    update_cache: true
+  when: drivestrik_pub_key_download.changed
+
+- name: Install drivestrike package
+  pacman:
+    name: "{{ drivestrike_package_name_arch }}"
+    state: present
