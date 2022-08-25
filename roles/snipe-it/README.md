@@ -2,7 +2,7 @@
 
 Deploys [snipe-it](https://snipeitapp.com/) in a
 [docker container](https://snipe-it.readme.io/docs/docker)
-and optionally a maria-db instance for storage.
+and a maria-db instance for storage.
 
 ## Requirements
 
@@ -31,7 +31,6 @@ in `snipe_it_config` will likely fix the issue.
 | `snipe_it_config_db_username`         | `"snipe-it"`    | Username for the mariaDB                     |
 | `snipe_it_config_db_password`         | `~`             | Password for the mariaDB                     |
 | `snipe_it_config_db_host`             | `"snipeit-db"`  | Hostname of the mariaDB[¹]                   |
-| `snipe_it_builtin_database_enable`    | `True`          | If the role should deploy a mariadb instance |
 
 ¹ Used as the container name for the built-in maria DB
 

@@ -1,0 +1,6 @@
+---
+- name: Deploy snipe-IT, an inventory/asset management system
+  hosts: "{{ snipe_it_hosts | default('snipe_it') }}"
+  become: true
+  roles:
+    - role: snipe-it

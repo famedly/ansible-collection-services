@@ -7,15 +7,15 @@ snipe_it_data_path: "{{ snipe_it_base_path }}/data"
 snipe_it_keys_path: "{{ snipe_it_base_path }}/keys"
 snipe_it_dumps_path: "{{ snipe_it_base_path }}/dumps"
 snipe_it_config_file: "{{ snipe_it_base_path }}/env"
+snipe_it_passwd_file: "{{ snipe_it_base_path }}/snipe-it-passwd"
 
 # built-in maria db config
-snipe_it_builtin_database_enable: true
-snipe_it_builtin_database_version: "10.6"
+snipe_it_builtin_database_version: "10.8"
 # generate a strong password based on the app key
 snipe_it_builtin_database_root_pass: "{{ snipe_it_config_app_key | password_hash('sha512', 'snipeit.db.root') | to_uuid }}"
-snipe_it_builtin_database_labels: {}
-snipe_it_builtin_database_ports: []
 snipe_it_builtin_database_data_path: "{{ snipe_it_base_path }}/mariadb"
+snipe_it_builtin_database_socket_path: "{{ snipe_it_base_path }}/mariadbd"
+snipe_it_builtin_database_passwd_file: "{{ snipe_it_base_path }}/mariadb-passwd"
 snipe_it_config: {}
 
 # app configuration
@@ -27,13 +27,13 @@ snipe_it_config_app_timezone: 'Europe/London'
 snipe_it_config_app_locale: en
 snipe_it_config_app_trusted_proxies: ~
 snipe_it_config_db_connection: mysql
-snipe_it_config_db_host: snipe-mysql
+snipe_it_config_db_host: ~
 snipe_it_config_db_database: snipe-it
 snipe_it_config_db_username: snipe-it
 snipe_it_config_db_password: ~
 snipe_it_config_db_prefix: ~
 snipe_it_config_db_dump_path: /usr/bin
-snipe_it_config_db_socket: ~
+snipe_it_config_db_socket: /var/run/mysqld/mysqld.sock
 snipe_it_config_db_port: ~
 
 # container configuration
