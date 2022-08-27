@@ -10,16 +10,15 @@
   file:
     path: "{{ vaultwarden_config_dir }}"
     state: directory
-    mode: 0755
+    mode: 0750
     owner: "{{ vaultwarden_user_res.uid }}"
     group: "{{ vaultwarden_user_res.group }}"
-    recurse: yes
 
 - name: Ensure configuration is templated
   copy:
     content: "{{ vaultwarden_config_merged | to_nice_json }}"
     dest: "{{ vaultwarden_config_file }}"
-    mode: 0755
+    mode: 0640
     owner: "{{ vaultwarden_user_res.uid }}"
     group: "{{ vaultwarden_user_res.group }}"
   notify: "restart-vaultwarden"
