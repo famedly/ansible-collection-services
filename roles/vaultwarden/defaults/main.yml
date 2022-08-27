@@ -9,6 +9,7 @@ vaultwarden_container_image: "docker.io/vaultwarden/server"
 vaultwarden_container_image_tag: ~
 vaultwarden_container_image_ref: "{{ vaultwarden_container_image }}:{{ vaultwarden_container_image_tag | default(vaultwarden_version + '-alpine', true) }}"
 vaultwarden_container_default_env: []
+vaultwarden_container_labels: {}
 vaultwarden_container_etc_hosts: ~
 vaultwarden_container_networks: ~
 vaultwarden_container_restart_policy: unless-stopped
