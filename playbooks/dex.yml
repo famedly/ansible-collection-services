@@ -1,0 +1,6 @@
+---
+- name: Deploy Dex - A Federated OpenID Connect Provider
+  hosts: "{{ dex_hosts | default('dex') }}"
+  become: true
+  roles:
+    - dex

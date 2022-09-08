@@ -1,0 +1,21 @@
+---
+# defaults file for dex
+
+dex_version: "2.33.1"
+dex_container_image_ref: ghcr.io/dexidp/dex
+dex_container_image_tag:
+dex_container_image: "{{ dex_container_image_ref }}:{{ dex_container_image_tag | default('v' + dex_version, True) }}"
+dex_container_image_force_pull: "{{ true if dex_container_image_tag else false }}"
+
+dex_container_name: "dex"
+dex_container_networks: []
+dex_container_etc_hosts: {}
+dex_container_extra_volumes: []
+dex_container_ports: []
+dex_container_labels: {}
+dex_container_env: {}
+dex_container_recreate: false
+
+dex_user: "dex"
+dex_base_path: /opt/dex
+dex_extra_config: {}

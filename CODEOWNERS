@@ -1,4 +1,5 @@
 roles/bitwarden/ @ratzupaltuff @jcgruenhage
+roles/dex/ @jcgruenhage
 roles/ghost/ @ratzupaltuff
 roles/hedgedoc/ @jcgruenhage
 roles/matomo/ @jcgruenhage

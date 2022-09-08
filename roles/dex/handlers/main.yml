@@ -1,0 +1,8 @@
+---
+# handlers file for dex
+- name: Restart dex container
+  docker_container:
+    name: "{{ dex_container_name }}"
+    state: started
+    restart: yes
+  listen: restart-dex

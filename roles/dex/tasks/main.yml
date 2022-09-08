@@ -1,0 +1,62 @@
+---
+# tasks file for dex
+- name: Create system user for dex
+  ansible.builtin.user:
+    name: "{{ dex_user }}"
+    state: present
+    system: yes
+  register: dex_user_res
+  tags: ['prepare', 'prepare-dex',
+         'deploy', 'deploy-dex' ]
+
+- name: Ensure host directories are present
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0700
+    owner: "{{ dex_user_res.uid }}"
+    group: "{{ dex_user_res.group }}"
+  loop:
+    - "{{ dex_base_path }}"
+  tags: [ 'prepare', 'prepare-dex' ]
+
+- name: Template dex configuration
+  ansible.builtin.copy:
+    content: |
+      {{ 'Managed by ansible' | comment('plain', prefix='#####', postfix='#####') }}
+      {{ dex_config | to_nice_yaml }}
+    dest: "{{ dex_base_path }}/config.yaml"
+    mode: 0600
+    owner: "{{ dex_user_res.uid }}"
+    group: "{{ dex_user_res.group }}"
+  notify:
+    - restart-dex
+  tags: [ 'deploy', 'deploy-dex' ]
+
+- name: Ensure dex container image is present
+  community.docker.docker_image:
+    name: "{{ dex_container_image }}"
+    force_source: "{{ dex_container_image_force_pull }}"
+    source: pull
+    state: present
+  register: dex_container_image_pulled
+  until: dex_container_image_pulled is success
+  retries: 10
+  delay: 5
+  tags: [ 'prepare', 'prepare-dex' ]
+
+- name: Ensure dex container is running
+  community.docker.docker_container:
+    name: "{{ dex_container_name }}"
+    image: "{{ dex_container_image }}"
+    networks: "{{ dex_container_networks }}"
+    etc_hosts: "{{ dex_container_etc_hosts }}"
+    ports: "{{ dex_container_ports }}"
+    labels: "{{ dex_container_labels_complete }}"
+    env: "{{ dex_container_env }}"
+    user: "{{ dex_user_res.uid }}"
+    recreate: "{{ dex_container_recreate }}"
+    volumes: "{{ dex_container_volumes }}"
+    restart_policy: unless-stopped
+    state: started
+  tags: [ 'deploy', 'deploy-dex' ]

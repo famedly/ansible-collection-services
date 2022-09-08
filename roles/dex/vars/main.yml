@@ -1,0 +1,24 @@
+---
+# vars file for dex
+
+dex_config: "{{ dex_base_config | combine(dex_extra_config, recursive=True) }}"
+dex_base_config:
+  issuer: https://{{ dex_domain }}
+  storage:
+    type: memory  # TODO: this should be backed by a database of some sort
+  web:
+    http: 0.0.0.0:5556
+  telemetry:
+    http: 0.0.0.0:5558
+  logger:
+    level: info
+  staticClients: "{{ dex_static_clients }}"
+  connectors: "{{ dex_connectors }}"
+
+dex_container_labels_base:
+  version: "{{ dex_version }}"
+dex_container_labels_complete: "{{ dex_container_labels_base | combine(dex_container_labels) }}"
+
+dex_container_base_volumes:
+  - "{{ dex_base_path }}/config.yaml:/etc/dex/config.docker.yaml"
+dex_container_volumes: "{{ dex_container_base_volumes + dex_container_extra_volumes | default([]) }}"
