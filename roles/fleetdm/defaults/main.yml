@@ -1,0 +1,38 @@
+---
+# defaults file for fleetdm
+fleetdm_logging_json: false
+
+fleetdm_db_host: "{{ famedly_docker_gateway_ip }}"
+fleetdm_db_name: fleetdm
+fleetdm_db_user: fleetdm
+fleetdm_db_port: 3306
+
+fleetdm_redis_port: 6379
+
+fleetdm_version: 4.22.0
+
+fleetdm_user: fleetdm
+
+fleetdm_base_path: /opt/fleetdm
+fleetdm_config_path: "{{ fleetdm_base_path }}/config.yml"
+
+fleetdm_config: {}
+
+fleetdm_server_bind_address: 0.0.0.0
+fleetdm_server_bind_port: 8080
+
+fleetdm_container_name: fleet
+fleetdm_container_image: docker.io/fleetdm/fleet
+# fleetdm_container_tag:
+fleetdm_container_image_ref: "{{ fleetdm_container_image }}:{{ fleetdm_container_tag | default('v' + fleetdm_version, true) }}"
+fleetdm_container_image_force_pull: "{{ fleetdm_container_tag is defined }}"
+fleetdm_container_env: {}
+fleetdm_container_labels: {}
+fleetdm_container_ports:
+  - 3000:3000
+fleetdm_container_volumes: []
+mariadb_version: 10.7.3
+mariadb_docker_image: docker.io/mariadb:{{ mariadb_version }}
+mariadb_docker_labels: {}  # override
+mariadb_docker_ports:
+  - "{{ famedly_docker_gateway_ip }}:{{ fleetdm_db_port }}:3306"

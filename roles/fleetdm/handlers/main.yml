@@ -1,0 +1,15 @@
+---
+# handlers file for fleetdm
+- name: Restart fleetdm container
+  community.docker.docker_container:
+    name: "{{ fleetdm_container_name }}"
+    state: started
+    restart: true
+  listen: restart-fleetdm
+
+- name: Apply app config with fleetctl
+  community.docker.docker_container_exec:
+    container: "{{ fleetdm_container_name }}"
+    command: fleetctl apply -f {{ fleetdm_app_config_file }}
+    chdir: "{{ fleetdm_config_dir_path }}"
+  listen: fleetctl-apply

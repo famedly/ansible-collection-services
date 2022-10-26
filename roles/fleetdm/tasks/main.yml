@@ -1,0 +1,98 @@
+---
+# tasks file for fleetdm
+
+- name: Launch mariadb instance for fleetdm
+  become: true
+  community.docker.docker_container:
+    name: mariadb
+    ports: "{{ mariadb_docker_ports }}"
+    image: "{{ mariadb_docker_image }}"
+    volumes:
+      - /opt/mariadb/database:/var/lib/mysql
+    labels: "{{ mariadb_docker_labels_complete }}"
+    env:
+      MYSQL_ROOT_PASSWORD: "{{ fleetdm_db_password }}"
+      MYSQL_DATABASE: "{{ fleetdm_db_name }}"
+      MYSQL_USER: "{{ fleetdm_db_user }}"
+      MYSQL_PASSWORD: "{{ fleetdm_db_password }}"
+    restart_policy: unless-stopped
+  tags: [deploy, deploy-fleetdm]
+- name: Ensure fleetdm user is created
+  become: true
+  ansible.builtin.user:
+    name: "{{ fleetdm_user }}"
+    state: present
+    system: true
+  register: fleetdm_user_res
+  tags: [prepare, prepare-fleetdm]
+- name: Ensure fleetdm directories are created
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+    owner: "{{ fleetdm_user_res.uid }}"
+    group: "{{ fleetdm_user_res.group }}"
+  loop:
+    - "{{ fleetdm_base_path }}"
+  tags: [prepare, prepare-fleetdm]
+- name: Ensure fleetdm configuration is templated
+  become: true
+  ansible.builtin.copy:
+    content: "{{ fleetdm_config_merged | to_nice_yaml }}"
+    dest: "{{ fleetdm_config_path }}"
+    mode: 0600
+    owner: "{{ fleetdm_user_res.uid }}"
+    group: "{{ fleetdm_user_res.group }}"
+  notify: restart-fleetdm
+  tags: [deploy, deploy-fleetdm]
+- name: Ensure fleetdm image is pulled
+  become: true
+  community.docker.docker_image:
+    name: "{{ fleetdm_container_image_ref }}"
+    source: pull
+    state: present
+    force_source: "{{ fleetdm_container_image_force_pull }}"
+  register: fleetdm_container_image_pulled
+  until: fleetdm_container_image_pulled is success
+  retries: 10
+  delay: 5
+  tags: [prepare, prepare-fleetdm]
+- name: Ensure fleetdm db migrations are up to date
+  become: true
+  community.docker.docker_container:
+    image: "{{ fleetdm_container_image_ref }}"
+    name: "fleetdm-database-migrations"
+    auto_remove: true
+    user: "{{ fleetdm_user_res.uid }}:{{ fleetdm_user_res.group }}"
+    volumes: "{{ fleetdm_container_volumes_merged }}"
+    ports: "{{ fleetdm_container_ports }}"
+    env: "{{ fleetdm_container_env }}"
+    labels: "{{ fleetdm_container_labels_merged }}"
+    entrypoint: []
+    command:
+      - /usr/bin/fleet
+      - prepare
+      - db
+      - --config
+      - /fleetdm/config.yml
+  tags: [deploy, deploy-fleetdm]
+- name: Ensure fleetdm container is started
+  become: true
+  community.docker.docker_container:
+    image: "{{ fleetdm_container_image_ref }}"
+    name: "{{ fleetdm_container_name }}"
+    state: started
+    restart_policy: unless-stopped
+    user: "{{ fleetdm_user_res.uid }}:{{ fleetdm_user_res.group }}"
+    volumes: "{{ fleetdm_container_volumes_merged }}"
+    ports: "{{ fleetdm_container_ports }}"
+    env: "{{ fleetdm_container_env }}"
+    labels: "{{ fleetdm_container_labels_merged }}"
+    entrypoint: []
+    command:
+      - /usr/bin/fleet
+      - serve
+      - --config
+      - /fleetdm/config.yml
+  tags: [deploy, deploy-fleetdm]

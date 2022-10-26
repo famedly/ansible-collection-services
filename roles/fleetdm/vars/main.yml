@@ -1,0 +1,30 @@
+---
+# vars file for fleetdm
+fleetdm_container_labels_merged: "{{ fleetdm_container_labels_base | combine(fleetdm_container_labels) }}"
+fleetdm_container_labels_base:
+  version: "{{ fleetdm_container_image_tag | default('v' + fleetdm_version, true) }}"
+
+fleetdm_container_volumes_merged: "{{ fleetdm_container_volumes_base + fleetdm_container_volumes }}"
+fleetdm_container_volumes_base:
+  - "{{ fleetdm_config_path }}:/fleetdm/config.yml"
+
+fleetdm_config_merged: "{{ fleetdm_config_base | combine(fleetdm_config) }}"
+fleetdm_config_base:
+  mysql:
+    address: "{{ fleetdm_db_host }}:{{ fleetdm_db_port | int }}"
+    database: "{{ fleetdm_db_name }}"
+    username: "{{ fleetdm_db_user }}"
+    password: "{{ fleetdm_db_password }}"
+  redis:
+    address: "{{ fleetdm_redis_host }}:{{ fleetdm_redis_port | int }}"
+    password: "{{ fleetdm_redis_password }}"
+    database: "{{ fleetdm_redis_database | default(0) | int}}"
+  server:
+    address: "{{ fleetdm_server_bind_address }}:{{ fleetdm_server_bind_port }}"
+    tls: false
+  logging:
+    json: "{{ fleetdm_logging_json }}"
+
+mariadb_docker_labels_complete: "{{ mariadb_docker_labels_base | combine(mariadb_docker_labels) }}"
+mariadb_docker_labels_base:
+  version: "{{ mariadb_version }}"

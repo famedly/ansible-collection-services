@@ -1,0 +1,5 @@
+---
+- hosts: [fleetdm]
+  become: true
+  roles:
+    - fleetdm
