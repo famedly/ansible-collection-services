@@ -13,8 +13,19 @@ snipe_it_builtin_database_enable: true
 snipe_it_builtin_database_version: "10.6"
 # generate a strong password based on the app key
 snipe_it_builtin_database_root_pass: "{{ snipe_it_config_app_key | password_hash('sha512', 'snipeit.db.root') | to_uuid }}"
-snipe_it_builtin_database_labels: {}
-snipe_it_builtin_database_ports: []
+snipe_it_builtin_database_container_image_reference: >-
+  docker.io/mariadb:{{ snipe_it_builtin_database_version }}
+snipe_it_builtin_database_container_name: "{{ snipe_it_config_db_host | default('snipe-mysql', true) }}"
+snipe_it_builtin_database_container_volumes:
+  - "{{ snipe_it_builtin_database_data_path }}:/var/lib/mysql:z"
+snipe_it_builtin_database_container_env:
+  MARIADB_ROOT_PASSWORD: "{{ snipe_it_builtin_database_root_pass }}"
+  MARIADB_DATABASE: "{{ snipe_it_config_db_database }}"
+  MARIADB_USER: "{{ snipe_it_config_db_username }}"
+  MARIADB_PASSWORD: "{{ snipe_it_config_db_password }}"
+  MARIADB_ROOT_HOST: "%"
+snipe_it_builtin_database_container_labels: {}
+snipe_it_builtin_database_container_ports: []
 snipe_it_builtin_database_data_path: "{{ snipe_it_base_path }}/mariadb"
 snipe_it_config: {}
 
@@ -22,7 +33,7 @@ snipe_it_config: {}
 snipe_it_config_app_key: ~
 snipe_it_config_app_url: ~
 # container image creates a "docker" user by default with uid=1000
-snipe_it_config_app_user: "docker"
+snipe_it_config_app_user: "snipe-it"
 snipe_it_config_app_timezone: 'Europe/London'
 snipe_it_config_app_locale: en
 snipe_it_config_app_trusted_proxies: ~
@@ -38,11 +49,21 @@ snipe_it_config_db_port: ~
 
 # container configuration
 snipe_it_container_name: "snipe-it"
-snipe_it_container_image: "docker.io/snipe/snipe-it"
+snipe_it_container_image_registry: "docker.io"
+snipe_it_container_image_namespace: "snipe"
+snipe_it_container_image_name: "snipe-it"
+snipe_it_container_image: >-
+  {{ snipe_it_container_image_registry ~ "/" ~
+     ((snipe_it_container_image_namespace is string and snipe_it_container_image_namespace | length > 0)
+       | ternary(snipe_it_container_image_namespace ~ "/", ""))
+     ~ snipe_it_container_image_name }}
 snipe_it_container_image_tag: ~
-snipe_it_container_image_ref: "{{ snipe_it_container_image }}:{{ snipe_it_container_image_tag | default('v' + snipe_it_version, True) }}"
+snipe_it_container_image_ref: >-
+  {{ snipe_it_container_image }}:{{ snipe_it_container_image_tag | default('v' + snipe_it_version, true) }}
 snipe_it_container_env: {}
 snipe_it_container_labels: {}
+snipe_it_container_etc_hosts:
+  "snipe-mysql": "{{ snipe_mysql_container_info.container.NetworkSettings.Networks.bridge.IPAddress }}"
 snipe_it_container_ports:
   - 80:80
 snipe_it_container_volumes: []

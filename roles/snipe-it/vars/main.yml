@@ -40,3 +40,4 @@ snipe_it_config_base:
   DB_PASSWORD: "{{ snipe_it_config_db_password }}"
   DB_DUMP_PATH: "{{ snipe_it_config_db_dump_path }}"
   IMAGE_LIB: gd
+  PHP_UPLOAD_LIMIT: "32"
