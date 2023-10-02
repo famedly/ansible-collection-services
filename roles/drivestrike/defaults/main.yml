@@ -1,0 +1,11 @@
+---
+
+drivestrike_package_name: drivestrike
+drivestrike_package_name_arch: "{{ drivestrike_package_name }}"
+
+drivestrike_arch_pubkey_url: "https://app.drivestrike.com/static/drivestrike.pubkey.txt"
+drivestrike_arch_pubkey_file: "/tmp/drivestrike.pub"
+drivestrike_arch_pubkey_id: 6B48829B
+drivestrike_arch_pubkey_fingerprint: A9CA32527A44BC385FCAEF85441FF83A6B48829B
+drivestrike_arch_repo_server_url: "https://app.drivestrike.com/static/arch"
+drivestrike_arch_pacman_config_file: /etc/pacman.conf
