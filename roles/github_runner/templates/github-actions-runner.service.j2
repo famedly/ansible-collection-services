@@ -1,0 +1,12 @@
+[Unit]
+Description={{ github_runner_systemd_unit_description }}
+
+[Service]
+Type=exec
+User={{ github_runner_user }}
+WorkingDirectory={{ github_runner_base_path }}
+
+ExecStart={{ github_runner_base_path }}/run.sh
+
+[Install]
+WantedBy=multi-user.target
