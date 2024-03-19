@@ -1,0 +1,5 @@
+---
+- hosts: [netbox]
+  become: true
+  roles:
+    - netbox
