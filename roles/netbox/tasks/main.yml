@@ -1,0 +1,77 @@
+---
+- name: Create group
+  ansible.builtin.group:
+    name: "{{ netbox_user_name }}"
+  become: true
+
+- name: Add the user "{{ netbox_user_name }}"
+  ansible.builtin.user:
+    name: "{{ netbox_user_name }}"
+    groups: "{{ netbox_user_name }}"
+    create_home: false
+  register: netbox_user
+  become: true
+
+- name: "Create directories for netbox"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+    owner: "{{ netbox_user.name }}"
+    group: "{{ netbox_user.group }}"
+  become: true
+  loop:
+      - "{{ netbox_path_base }}"
+      - "{{ netbox_path_yaml_config }}"
+      - "{{ netbox_path_state }}"
+
+- name: "Write netbox config loader"
+  ansible.builtin.copy:
+    src: "../templates/loader.py"
+    dest: "{{ netbox_path_base}}/configuration.py"
+    mode: "0775"
+
+- ansible.builtin.template:
+    src: "templates/flat.yml.j2"
+    dest: "{{ netbox_path_yaml_config }}/flat.yaml"
+
+- name: "Write netbox config"
+  when: "{{ netbox_user_config is defined }}"
+  ansible.builtin.copy:
+    content: "{{ item.content | ansible.builtin.to_nice_yaml() }}"
+    dest: "{{ netbox_path_yaml_config ~ '/' ~ item.dest }}"
+    mode: "0640"
+  loop:
+    - { content: "{{ netbox_user_config }}", dest: "user.yaml" }
+
+- name: Ensure container image is present locally
+  community.docker.docker_image:
+    name: "{{ netbox_container_image_reference }}"
+    source: "pull"
+    state: "{{ netbox_container_image_state }}"
+    force_source: "{{ netbox_container_image_force_pull }}"
+  register: netbox_container_image_pulled
+  until: netbox_container_image_pulled is success
+  retries: 10
+  delay: 5
+  become: true
+  tags: ["deploy", "deploy-netbox"]
+
+- name: Ensure container is started
+  community.docker.docker_container:
+    image: "{{ netbox_container_image_reference }}"
+    name: "{{ netbox_container_name }}"
+    state: "started"
+    restart_policy: "{{ netbox_container_restart_policy | default(omit) }}"
+    user: "{{ netbox_user.uid ~ ':' ~ netbox_user.group }}"
+    volumes: "{{ netbox_container_volumes }}"
+    ports: "{{ netbox_container_ports }}"
+    env: "{{ netbox_container_env | default(omit) }}"
+    labels: "{{ netbox_container_labels_merged }}"
+    command: "{{ netbox_container_command }}"
+    etc_hosts: "{{ netbox_container_etc_hosts | default(omit) }}"
+    networks: "{{ netbox_container_networks | default(omit) }}"
+    purge_networks: "{{ netbox_container_purge_networks | default(omit) }}"
+  become: true
+  tags: ["deploy", "deploy-netbox"]
+
