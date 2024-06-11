@@ -1,7 +1,7 @@
 ---
 netbox_path_base: /opt/netbox
 
-netbox_version: "3.7.5"
+netbox_version: "4.0.5"
 
 netbox_user_name: netbox
 
