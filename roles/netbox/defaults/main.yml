@@ -95,7 +95,7 @@ netbox_container_nginx_image_repository: >-
     ~ netbox_container_nginx_image_name
   }}
 
-netbox_container_image_registry: "docker-oss.nexus.famedly.de"
+netbox_container_image_registry: "registry.famedly.net/docker-oss"
 netbox_container_image_name: "netbox"
 
 netbox_container_nginx_image_registry: "docker.io"
