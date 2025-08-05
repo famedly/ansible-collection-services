@@ -1,0 +1,25 @@
+---
+
+github_runner_user: "github-runner"
+github_runner_user_groups:
+  - "docker"
+github_runner_base_path: "/opt/github-runner"
+github_runner_work_path: "{{ github_runner_base_path }}/cache"
+github_runner_tarball: "{{ github_runner_base_path }}/github-actions-runner.tar.gz"
+
+github_runner_systemd_unit_name: "github-actions-runner.service"
+github_runner_systemd_unit_description: >-
+  GitHub Actions self-hosted runner
+
+github_runner_github_org: ~
+github_runner_github_bearer_token: ~
+github_runner_github_registration_token_url: >-
+  https://api.github.com/orgs/{{ github_runner_github_org }}/actions/runners/registration-token
+github_runner_github_runner_download_url: >-
+  https://api.github.com/orgs/{{ github_runner_github_org }}/actions/runners/downloads
+github_runner_distribution: linux
+github_runner_architecture: x64
+
+github_runner_enabled: true
+github_runner_autostart: "{{ github_runner_enabled | ternary('enabled', 'disabled') }}"
+github_runner_state: "started"
