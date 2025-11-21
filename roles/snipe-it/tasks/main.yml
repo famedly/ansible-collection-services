@@ -49,7 +49,7 @@
   when: snipe_it_builtin_database_enable|bool
 
 - name: Ensure snipe-it container is started
-  docker_container:
+  community.docker.docker_container:
     image: "{{ snipe_it_container_image_ref }}"
     name: "{{ snipe_it_container_name }}"
 #    user: "{{ snipe_it_user_res.uid }}:{{ snipe_it_user_res.group }}"
@@ -61,4 +61,4 @@
       snipe-mysql: "{{ snipe_mysql_container.container.NetworkSettings.Networks.bridge.IPAddress }}"
     restart_policy: unless-stopped
     state: started
-    pull: true
+    pull: false

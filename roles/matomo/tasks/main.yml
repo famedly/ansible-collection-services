@@ -27,10 +27,10 @@
 
 - name: Launch matomo
   become: true
-  docker_container:
+  community.docker.docker_container:
     name: matomo
     image: "{{ matomo_docker_image }}"
-    pull: true
+    pull: false
     links:
       - mariadb:mariadb
       - redis:redis

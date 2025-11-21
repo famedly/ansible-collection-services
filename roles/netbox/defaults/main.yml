@@ -60,7 +60,7 @@ netbox_container_volumes_nginx:
 
 netbox_container_restart_policy: "always"
 netbox_container_image_state: "present"
-netbox_container_image_force_pull: true
+netbox_container_image_force_pull: false
 netbox_container_image_reference: >-
   {{
     netbox_container_image_repository

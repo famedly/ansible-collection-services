@@ -41,11 +41,11 @@
   notify: "restart-ktra"
 
 - name: Ensure container is started
-  docker_container:
+  community.docker.docker_container:
     image: "{{ ktra_container_image_ref }}"
     name: "{{ ktra_container_name }}"
     state: started
-    pull: true
+    pull: false
     restart_policy: unless-stopped
     user: "{{ ktra_user_res.uid }}:{{ ktra_user_res.group }}"
     volumes: "{{ ktra_container_volumes_merged }}"

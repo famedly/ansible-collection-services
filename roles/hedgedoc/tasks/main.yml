@@ -29,11 +29,11 @@
   notify: "restart-hedgedoc"
 
 - name: Ensure container is started
-  docker_container:
+  community.docker.docker_container:
     image: "{{ hedgedoc_container_image_ref }}"
     name: "{{ hedgedoc_container_name }}"
     state: started
-    pull: true
+    pull: false
     restart_policy: unless-stopped
     user: "{{ hedgedoc_user_res.uid }}:{{ hedgedoc_user_res.group }}"
     volumes: "{{ hedgedoc_container_volumes_merged }}"

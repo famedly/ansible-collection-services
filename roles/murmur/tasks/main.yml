@@ -26,14 +26,14 @@
   become: true
 
 - name: Install murmur with docker
-  docker_container:
+  community.docker.docker_container:
     name: "{{ murmur_docker_name }}"
     image: "{{ murmur_docker_image }}"
     ports: "{{ murmur_docker_ports }}"
     labels: "{{ murmur_docker_labels }}"
     restart_policy: unless-stopped
     recreate: true
-    pull: true
+    pull: false
     entrypoint:
       - "/usr/bin/murmurd"
       - "-fg"
