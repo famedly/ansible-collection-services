@@ -1,5 +1,0 @@
----
-- hosts: [matomo]
-  become: true
-  roles:
-    - matomo
