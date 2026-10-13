@@ -1,8 +1,0 @@
----
-# handlers file for hedgedoc
-- name: Restart hedgedoc
-  docker_container:
-    name: "{{ hedgedoc_container_name }}"
-    state: "started"
-    restart: true
-  listen: "restart-hedgedoc"
