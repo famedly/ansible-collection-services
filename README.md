@@ -11,7 +11,6 @@ with no direct relation to any customers.
 
 - [`vaultwarden`](roles/vaultwarden/README.md): role for deploying [vaultwarden](https://github.com/dani-garcia/vaultwarden)
   (formerly known as `bitwarden_rs`), a bitwarden compatible server, deployed using a docker container.
-- [`snipe-it`](roles/snipe-it/README.md): used for deploying [SnipeIt](https://snipeitapp.com/), an open-source asset management.
 
 ## License
 
