@@ -92,7 +92,6 @@
     command: "{{ item.entry }}"
     etc_hosts: "{{ netbox_container_etc_hosts | default(omit) }}"
     networks: "{{ netbox_container_networks | default(omit) }}"
-    purge_networks: "{{ netbox_container_purge_networks | default(omit) }}"
   become: true
   tags: ["deploy", "deploy-netbox"]
   loop: "{{ netbox_container_commands }}"
@@ -109,6 +108,5 @@
     labels: "{{ netbox_container_labels_merged }}"
     etc_hosts: "{{ netbox_container_etc_hosts | default(omit) }}"
     networks: "{{ netbox_container_networks | default(omit) }}"
-    purge_networks: "{{ netbox_container_purge_networks | default(omit) }}"
   become: true
   tags: ["deploy", "deploy-netbox"]
